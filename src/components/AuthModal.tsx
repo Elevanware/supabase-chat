@@ -1,13 +1,16 @@
 'use client'
-import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 import { useState } from 'react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog'
+import { Button } from './ui/button'
+import { Input } from './ui/input'
+import { Label } from './ui/label'
+import { useAuthStore } from '@/lib/store/useAuthStore'
 
-export default function AuthForm({ type }: { type: 'login' | 'signup' }) {
-  const router = useRouter()
-  const supabase = createClient()
+export default function AuthForm({ type, open, setOpen, setType }: { type: 'login' | 'signup', open: boolean, setOpen: (open: boolean) => void, setType: (type: 'login' | 'signup') => void }) {
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const signIn = useAuthStore((state) => state.signIn)
+  const signUp = useAuthStore((state) => state.signUp)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -18,30 +21,32 @@ export default function AuthForm({ type }: { type: 'login' | 'signup' }) {
     const email = formData.get('email') as string
     const password = formData.get('password') as string
     const displayName = formData.get('displayName') as string
-
-    const { error } = type === 'login'
-      ? await supabase.auth.signInWithPassword({ email, password })
-      : await supabase.auth.signUp({
-          email,
-          password,
-          options: { data: { displayName } }
-        })
-
-    setLoading(false)
-
-    if (error) {
-      setErrorMsg(error.message)
-    } else {
-      router.push('/chat')
+    try {
+      if (type === 'login') {
+        await signIn(email, password);
+      } else {
+        await signUp(email, password, displayName);
+      }
+      setOpen(false);
+      setType('login');
+    } catch (error:any) {
+      setErrorMsg(error.message);
+    }finally{
+      setLoading(false)
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent>
+        <DialogHeader className='sm:text-center'>
+          <DialogTitle>{type === 'login' ? 'Login' : 'Sign up'}</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-5">
       {type === 'signup' && (
         <div>
-          <label className="block mb-1 font-medium text-sm">Name</label>
-          <input
+          <Label className="block mb-1 font-medium text-sm">Name</Label>
+          <Input
             name="displayName"
             type="text"
             placeholder="John Doe"
@@ -52,8 +57,8 @@ export default function AuthForm({ type }: { type: 'login' | 'signup' }) {
         </div>
       )}
       <div>
-        <label className="block mb-1 font-medium text-sm">Email</label>
-        <input
+        <Label className="block mb-1 font-medium text-sm">Email</Label>
+        <Input
           name="email"
           type="email"
           placeholder="you@example.com"
@@ -62,8 +67,8 @@ export default function AuthForm({ type }: { type: 'login' | 'signup' }) {
         />
       </div>
       <div>
-        <label className="block mb-1 font-medium text-sm">Password</label>
-        <input
+        <Label className="block mb-1 font-medium text-sm">Password</Label>
+        <Input
           name="password"
           type="password"
           placeholder="••••••••"
@@ -75,31 +80,34 @@ export default function AuthForm({ type }: { type: 'login' | 'signup' }) {
 
       {errorMsg && <p className="text-red-500 text-sm">{errorMsg}</p>}
 
-      <button
+      <Button
         type="submit"
-        className="w-full bg-blue-600 hover:bg-blue-700 transition-colors text-white py-2 rounded-md font-medium disabled:opacity-50"
+        className="w-full bg-blue-600 hover:bg-blue-700 transition-colors text-white py-2 rounded-md font-medium disabled:opacity-50 cursor-pointer"
         disabled={loading}
       >
         {loading ? 'Processing...' : type === 'login' ? 'Login' : 'Sign Up'}
-      </button>
+      </Button>
 
       <div className="text-center text-sm mt-4">
         {type === 'login' ? (
           <>
             Don&apos;t have an account?{' '}
-            <a href="/signup" className="text-blue-600 hover:underline">
+            <span onClick={() => setType('signup')} className="text-blue-600 hover:underline cursor-pointer">
               Sign Up
-            </a>
+            </span>
           </>
         ) : (
           <>
             Already have an account?{' '}
-            <a href="/login" className="text-blue-600 hover:underline">
+            <span onClick={() => setType('login')} className="text-blue-600 hover:underline cursor-pointer">
               Login
-            </a>
+            </span>
           </>
         )}
       </div>
     </form>
+      </DialogContent>
+      </Dialog>
+    
   )
 }
