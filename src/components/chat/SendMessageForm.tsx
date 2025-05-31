@@ -4,10 +4,12 @@ import { createClient } from '@/lib/supabase/client';
 
 export default function SendMessageForm({ 
   receiverId, 
-  currentUserId 
+  currentUserId,
+  onMessageSent
 }: { 
   receiverId: string;
   currentUserId: string;
+  onMessageSent: (message: string) => void
 }) {
   const [message, setMessage] = useState('');
   const supabase = createClient();
@@ -15,6 +17,9 @@ export default function SendMessageForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim()) return;
+
+     // Notify parent component immediately
+     onMessageSent(message);
 
     const { error } = await supabase
       .from('messages')

@@ -8,7 +8,7 @@ export default function ChatContainer({ currentUserId, receiver }: { currentUser
   const [messages, setMessages] = useState<any[]>([]);
   const supabase = createClient();
 
- 
+    console.log("receiver", receiver, currentUserId)
 
   useEffect(() => {
     if (!receiver || !currentUserId) return;
@@ -27,19 +27,23 @@ export default function ChatContainer({ currentUserId, receiver }: { currentUser
     fetchMessages();
 
     const channel = supabase
-      .channel('realtime messages')
+      .channel(`conversation:${currentUserId}-${receiver.id}`)
       .on('postgres_changes', {
         event: 'INSERT',
         schema: 'public',
         table: 'messages',
-        filter: `receiver_id=eq.${currentUserId}`,
+        filter: `and(receiver_id.eq.${currentUserId},sender_id.eq.${receiver.id})`
       }, (payload) => {
-        if (
-          (payload.new.sender_id === receiver.id && payload.new.receiver_id === currentUserId) ||
-          (payload.new.sender_id === currentUserId && payload.new.receiver_id === receiver.Id)
-        ) {
-          setMessages(prev => [...prev, payload.new]);
-        }
+        setMessages(prev => [...prev, payload.new]);
+      })
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'messages',
+        filter: `and(sender_id.eq.${currentUserId},receiver_id.eq.${receiver.id})`
+      }, (payload) => {
+        // Handle outgoing messages
+        setMessages(prev => [...prev, payload.new]);
       })
       .subscribe();
 
@@ -75,6 +79,16 @@ export default function ChatContainer({ currentUserId, receiver }: { currentUser
       <SendMessageForm 
         receiverId={receiver.id} 
         currentUserId={currentUserId} 
+        onMessageSent={(newMessage) => {
+            // Optimistically update the UI immediately
+            setMessages(prev => [...prev, {
+              id: Date.now(), // temporary ID
+              content: newMessage,
+              sender_id: currentUserId,
+              receiver_id: receiver.id,
+              created_at: new Date().toISOString()
+            }]);
+          }}
       />
     </div>
   );
