@@ -1,7 +1,6 @@
 'use client';
 import { createClient } from '@/lib/supabase/client';
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
 import MessageList from './MessageList';
 import SendMessageForm from './SendMessageForm';
 

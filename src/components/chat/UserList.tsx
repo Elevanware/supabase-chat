@@ -1,7 +1,6 @@
 'use client';
 import { createClient } from '@/lib/supabase/client';
 import { Dispatch, useEffect, useState } from 'react';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 interface UserListProps {

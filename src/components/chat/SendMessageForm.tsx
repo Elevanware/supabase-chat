@@ -1,7 +1,6 @@
 'use client';
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { useRouter } from 'next/navigation';
 
 export default function SendMessageForm({ 
   receiverId, 
@@ -12,7 +11,6 @@ export default function SendMessageForm({
 }) {
   const [message, setMessage] = useState('');
   const supabase = createClient();
-  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
