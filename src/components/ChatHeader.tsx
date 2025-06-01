@@ -17,12 +17,8 @@ export default function ChatHeader() {
       <nav aria-label="Global" className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
         <div className="flex lg:flex-1">
           <Link href="/" className="-m-1.5 p-1.5">
-            <span className="sr-only">Supabase Chat</span>
-            <Image
-              alt=""
-              src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
-              className="h-8 w-8"
-            />
+            <span className="">Supabase Chat</span>
+            
             
           </Link>
         </div>
@@ -39,6 +35,8 @@ export default function ChatHeader() {
                   src={user.user_metadata.avatar_url}
                   alt=""
                   className="h-8 w-8 rounded-full"
+                  width={32}
+                  height={32}
                 />
                 {user.user_metadata.username}
               </div>
