@@ -74,7 +74,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
   
 
-    const { data, error } = await supabase.from('messages').insert([
+   await supabase.from('messages').insert([
       {
         chat_room_id: selectedUser.chat_room_id,
         content: text,
@@ -82,9 +82,9 @@ export const useChatStore = create<ChatState>((set, get) => ({
       },
     ]).select();
 
-    if (!error && data?.[0]) {
-      set((state) => ({ messages: [...state.messages, data[0]] }));
-    }
+    // if (!error && data?.[0]) {
+    //   set((state) => ({ messages: [...state.messages, data[0]] }));
+    // }
   },
 
   loadMoreMessages: async () => {
