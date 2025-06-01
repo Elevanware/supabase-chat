@@ -111,7 +111,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
   },
 
   searchUsers: async (query: string) => {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('users')
       .select('id, username, avatar_url')
       .ilike('username', `%${query}%`)
@@ -156,7 +156,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
 // Helper: Create/get 1-on-1 chat room ID
 async function getChatRoomId(otherUserId: string): Promise<string> {
   const userId = (await supabase.auth.getUser()).data.user?.id;
-  const { data, error } = await supabase.rpc('get_or_create_room', {
+  const { data } = await supabase.rpc('get_or_create_room', {
     user1: userId,
     user2: otherUserId,
   });

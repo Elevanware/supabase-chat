@@ -33,7 +33,7 @@ export default function RootLayout({
 	  const { subscription } = listenAuthChanges();
   
 	  return () => subscription.unsubscribe();
-	}, [fetchSession, listenAuthChanges]);
+	}, [fetchSession, listenAuthChanges, subscribeToMessages]);
   return (
     <html lang="en">
       <body

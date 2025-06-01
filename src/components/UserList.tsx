@@ -2,12 +2,13 @@ import { useChatStore, User } from '@/lib/store/useChatStore';
 import React, { useEffect, useState } from 'react'
 import debounce from 'lodash.debounce';
 import { supabase } from '@/lib/supabase/client';
+import Image from 'next/image';
 
 
 
 const UserList = () => {
   const [search, setSearch] = useState<string>('');
-  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const selectUser = useChatStore((state) => state.selectUser);
   const recentChatUsers = useChatStore((state) => state.recentUsers);
   const fetchRecentUsers = useChatStore((state) => state.fetchRecentUsers);
@@ -25,11 +26,11 @@ const UserList = () => {
   useEffect(() => {
     if (search.length > 1) debouncedSearch(search);
     else setFilteredUsers([]);
-  }, [search]);
+  }, [search, debouncedSearch]);
 
   useEffect(() => {
     fetchRecentUsers();
-  },[])
+  },[fetchRecentUsers])
 
   return  (
     <div className="flex flex-col w-full h-full border bg-white">
@@ -52,7 +53,7 @@ const UserList = () => {
         className="flex items-center gap-3 px-4 py-3 border-b hover:bg-gray-50 cursor-pointer"
         onClick={() => selectUser({username: user.username, avatar_url: user.avatar_url, chat_room_id: '', other_user_id: user.id, last_message: '', last_message_at: ''})}
       >
-        <img src={user.avatar_url} alt="" className="w-12 h-12 rounded-full" />
+        <Image src={user.avatar_url} alt="" className="w-12 h-12 rounded-full" />
         <div className="flex-1">
           <div className="flex justify-between text-sm font-medium text-gray-800">
             <p>{user.username}</p>
@@ -66,7 +67,7 @@ const UserList = () => {
             className="flex items-center gap-3 px-4 py-3 border-b hover:bg-gray-50 cursor-pointer"
             onClick={() => selectUser(user)}
           >
-            <img src={user.avatar_url} alt="" className="w-12 h-12 rounded-full" />
+            <Image src={user.avatar_url} alt="" className="w-12 h-12 rounded-full" />
             <div className="flex-1">
               <div className="flex justify-between text-sm font-medium text-gray-800">
                 <p>{user.username}</p>

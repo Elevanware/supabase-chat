@@ -4,6 +4,8 @@ import { useState } from "react";
 import AuthForm from "./AuthModal";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import Link from "next/link";
+import Image from "next/image";
 
 export default function ChatHeader() {
     const [open, setOpen] = useState(false);
@@ -14,15 +16,15 @@ export default function ChatHeader() {
     <header className="bg-white">
       <nav aria-label="Global" className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
         <div className="flex lg:flex-1">
-          <a href="/" className="-m-1.5 p-1.5">
+          <Link href="/" className="-m-1.5 p-1.5">
             <span className="sr-only">Supabase Chat</span>
-            <img
+            <Image
               alt=""
               src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
               className="h-8 w-8"
             />
             
-          </a>
+          </Link>
         </div>
         {!user ?(<div className="hidden lg:flex lg:flex-1 lg:justify-end cursor-pointer" onClick={() => setOpen(true)}>
           <a className="text-sm/6 font-semibold text-gray-900">
@@ -33,7 +35,7 @@ export default function ChatHeader() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <div className="flex items-center gap-2">
-                <img
+                <Image
                   src={user.user_metadata.avatar_url}
                   alt=""
                   className="h-8 w-8 rounded-full"

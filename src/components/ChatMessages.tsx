@@ -1,4 +1,5 @@
 import { useChatStore } from '@/lib/store/useChatStore'
+import Image from 'next/image';
 import React from 'react'
 
 
@@ -28,7 +29,7 @@ const ChatMessages = () => {
     <div className="flex flex-col justify-between h-full p-6 overflow-y-auto">
       {/* chat message header */}
        <div className="flex items-center gap-3 p-4 border-b bg-gray-100">
-        <img
+        <Image
           src={selectedUser?.avatar_url}
           alt={selectedUser?.username}
           className="h-10 w-10 rounded-full"
